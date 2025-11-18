@@ -29,15 +29,4 @@ class ProductListController extends GetxController {
       isLoading(false);
     }
   }
-
-    void toggleFavorite(ProductList product) {
-    final index = productList.indexOf(product);
-    if (index != -1) {
-      productList[index].isFavorite = !productList[index].isFavorite;
-      productList.refresh(); // Notify listeners
-    }
-  }
-
-  List<ProductList> get favoriteProducts =>
-      productList.where((product) => product.isFavorite).toList();
 }

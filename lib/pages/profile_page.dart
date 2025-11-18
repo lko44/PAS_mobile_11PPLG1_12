@@ -23,7 +23,7 @@ class ProfilePage extends StatelessWidget {
             Center(
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage("assets/images/mantap.png"), 
+                backgroundImage: AssetImage("assets/image/mantap.png"), 
                 // ganti sesuai asset kamu
               ),
             ),

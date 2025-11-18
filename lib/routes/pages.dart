@@ -36,7 +36,7 @@ class AppPages {
     
     GetPage(
       name: Routes.productList,
-      page: () => ProductListPage(),
+      page: () => ProductlistPage(),
       binding: ProductlistBinding(),
     ),
 
@@ -48,7 +48,7 @@ class AppPages {
 
     GetPage(
       name: Routes.favProductList,
-      page: () => FavoritePage(),
+      page: () => FavproductlistPage(),
       binding: FavproductlistBinding(),
     ),
 

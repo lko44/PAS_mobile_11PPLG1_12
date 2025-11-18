@@ -1,56 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pas_mobile_11pplg1_12/controller/favProductList_controller.dart';
 import 'package:pas_mobile_11pplg1_12/controller/productList_controller.dart';
+import 'package:pas_mobile_11pplg1_12/widgets/custom_card.dart';
+import 'package:pas_mobile_11pplg1_12/widgets/custom_loading.dart';
+import 'package:pas_mobile_11pplg1_12/widgets/custom_text.dart';
 
-class ProductListPage extends StatelessWidget {
-  ProductListPage({super.key});
+class ProductlistPage extends StatelessWidget {
+  ProductlistPage({super.key});
   final controller = Get.find<ProductListController>();
+  final favController = Get.find<FavoritesController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Product List'), centerTitle: true),
+      appBar: AppBar(
+        title: CustomText(
+          "Store List",
+          size: 20,
+          weight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        centerTitle: true,
+      ),
       body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        if (controller.isLoading.value) return const CustomLoading();
 
         if (controller.productList.isEmpty) {
-          return const Center(child: Text('No products available.'));
+          return const Center(
+            child: CustomText(
+              "Tidak ada data ditemukan.",
+              size: 16,
+              color: Colors.black54,
+            ),
+          );
         }
 
         return RefreshIndicator(
-          onRefresh: () {
-            return controller.fetchProducts();
-          },
+          onRefresh: () async => controller.fetchProducts(),
           child: ListView.builder(
             itemCount: controller.productList.length,
+            padding: const EdgeInsets.all(10),
             itemBuilder: (context, index) {
-              final product = controller.productList[index];
-              return Card(
-                margin: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  leading: Image.network(
-                    product.image,
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
-                  ),
-                  title: Text(product.title),
-                  subtitle: Text(
-                    'Price: \$${product.price.toStringAsFixed(2)}\nCategory: ${product.category}',
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(
-                      product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: product.isFavorite ? Colors.red : Colors.grey,
-                    ),
-                    onPressed: () {
-                      controller.toggleFavorite(product);
-                    },
-                  ),
-                ),
-              );
+              final store = controller.productList[index];
+
+              return Obx(() {
+                return CustomCard(
+                  imageUrl: store.image,
+                  title: store.title,
+                  subtitle:
+                      "Price: ${store.price} | Category: ${store.category}",
+                  isFavorite: favController.isFavorite(store.toJson()),
+                  onFavorite: () {
+                    favController.toggleFavorite(store.toJson());
+                  },
+                );
+              });
             },
           ),
         );

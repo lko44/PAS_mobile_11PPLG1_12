@@ -1,34 +1,52 @@
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:pas_mobile_11pplg1_12/helpers/db_helper.dart';
 
-class FavproductlistController extends GetxController {
-  var bookmarks = [].obs;
+class FavoritesController extends GetxController {
+  var favorites = <Map<String, dynamic>>[].obs;
+  final _db = FavoriteDB();
 
-  Future<void> addBookmark(Map<String, dynamic> product) async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedBookmarks = prefs.getStringList('bookmarks') ?? [];
-
-    savedBookmarks.add(json.encode(product));
-    await prefs.setStringList('bookmarks', savedBookmarks);
-
-    bookmarks.value = savedBookmarks.map((e) => json.decode(e)).toList();
+  @override
+  void onInit() {
+    super.onInit();
+    loadFavorites();
   }
 
-  Future<void> removeBookmark(Map<String, dynamic> product) async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedBookmarks = prefs.getStringList('bookmarks') ?? [];
+  Future<void> loadFavorites() async {
+    final data = await _db.getFavorites();
 
-    savedBookmarks.remove(json.encode(product));
-    await prefs.setStringList('bookmarks', savedBookmarks);
-
-    bookmarks.value = savedBookmarks.map((e) => json.decode(e)).toList();
+    favorites.assignAll(
+      List<Map<String, dynamic>>.from(data),
+    );
   }
 
-  Future<void> loadBookmarks() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedBookmarks = prefs.getStringList('bookmarks') ?? [];
+  bool isFavorite(Map<String, dynamic> item) {
+    return favorites.any((fav) => fav["id"] == item["id"]);
+  }
 
-    bookmarks.value = savedBookmarks.map((e) => json.decode(e)).toList();
+  Future<void> toggleFavorite(Map<String, dynamic> item) async {
+    final id = item["id"];
+
+    if (isFavorite(item)) {
+      /// Hapus dari DB
+      await _db.deleteFavorite(id);
+
+      /// Hapus dari RxList
+      favorites.removeWhere((fav) => fav["id"] == id);
+    } else {
+      /// Buat Map baru
+      final newItem = {
+        "id": id,
+        "title": item["title"],
+        "price": item["price"],
+        "category": item["category"],
+        "image": item["image"],
+      };
+
+      /// Tambah ke DB
+      await _db.addFavorite(newItem);
+
+      /// Tambah ke RxList
+      favorites.add(newItem);
+    }
   }
 }

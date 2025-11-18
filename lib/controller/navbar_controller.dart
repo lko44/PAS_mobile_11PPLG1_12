@@ -7,8 +7,8 @@ class NavbarController extends GetxController {
   RxInt selectedIndex = 0.obs;
     final mobilePages = [
 
-    ProductListPage(),
-    FavoritePage(),
+    ProductlistPage(),
+    FavproductlistPage(),
     ProfilePage(),
   ];
 

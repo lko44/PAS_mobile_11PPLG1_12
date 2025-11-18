@@ -18,8 +18,7 @@ class ProductList {
   String description;
   Category category;
   String image;
-  Rating rating;
-  bool isFavorite;
+  Rating rating; 
 
   ProductList({
     required this.id,
@@ -29,7 +28,6 @@ class ProductList {
     required this.category,
     required this.image,
     required this.rating,
-    this.isFavorite = false,
   });
 
   factory ProductList.fromJson(Map<String, dynamic> json) => ProductList(
